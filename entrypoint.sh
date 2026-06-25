@@ -26,6 +26,7 @@ ARGS+=("--writable")
 ARGS+=("-t" "enableSixel=true")
 ARGS+=("-t" "enableTrzsz=true")
 ARGS+=("-t" "enableZmodem=true")
+ARGS+=("-t" "cursorStyle=bar")
 ARGS+=("-t" "lineHeight=1.5")
 ARGS+=("$SHELL")
 
