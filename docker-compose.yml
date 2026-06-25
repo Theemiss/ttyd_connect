@@ -1,0 +1,13 @@
+services:
+  ttyd:
+    build: .
+    image: ttyd_connect:local
+    container_name: ttyd_connect
+    ports:
+      - "7681:7681"
+    environment:
+      USERNAME: admin
+      PASSWORD: changeme
+    volumes:
+      - ./host_config:/root/.ssh/config:ro
+      - ${SSH_KEY_PATH:-./key.pem}:/root/.ssh/key.pem:ro

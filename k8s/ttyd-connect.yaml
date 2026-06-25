@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ttyd-connect
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ttyd-connect-config
+  namespace: ttyd-connect
+data:
+  USERNAME: "admin"
+  PASSWORD: "changeme"
+  TTYD_OPTIONS: "--client-option fontSize=16"
+  host_config: |
+    Host dev-server
+        HostName dev.example.com
+        User ubuntu
+        IdentityFile ~/.ssh/key.pem
+        Port 22
+        StrictHostKeyChecking accept-new
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ttyd-connect
+  namespace: ttyd-connect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ttyd-connect
+  template:
+    metadata:
+      labels:
+        app: ttyd-connect
+    spec:
+      containers:
+        - name: ttyd-connect
+          image: ttyd_connect:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7681
+          envFrom:
+            - configMapRef:
+                name: ttyd-connect-config
+          volumeMounts:
+            - name: ssh-key
+              mountPath: /root/.ssh/key.pem
+              subPath: key.pem
+              readOnly: true
+            - name: host-config
+              mountPath: /root/.ssh/config
+              subPath: host_config
+              readOnly: true
+      volumes:
+        - name: ssh-key
+          secret:
+            secretName: ttyd-ssh-key
+        - name: host-config
+          configMap:
+            name: ttyd-connect-config
+            items:
+              - key: host_config
+                path: host_config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ttyd-connect
+  namespace: ttyd-connect
+spec:
+  type: NodePort
+  selector:
+    app: ttyd-connect
+  ports:
+    - port: 7681
+      targetPort: 7681
+      nodePort: 30781

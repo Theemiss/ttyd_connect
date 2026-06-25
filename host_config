@@ -1,0 +1,6 @@
+Host dev-server
+    HostName dev.example.com
+    User ubuntu
+    IdentityFile ~/.ssh/key.pem
+    Port 22
+    StrictHostKeyChecking accept-new

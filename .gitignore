@@ -1,0 +1,12 @@
+# Private keys (mount at run time; never commit)
+key.pem
+id_rsa
+id_ed25519
+
+# Local overrides
+host_config.local
+
+.cursor/
+.cursorrules
+.agents/
+*.cursor.md
